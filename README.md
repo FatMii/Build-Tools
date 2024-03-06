@@ -86,7 +86,7 @@ Grunt 的 I/O 操作比较“呆板”，每个任务执行结束后都会将文
 
 Gulp 最大特点是引入了流的概念，同时提供了一系列常用的插件去处理流，流可以在插件之间传递。同时 Gulp 设计简单，既可以单独使用，也可以结合别的工具一起使用。
 
-# Browserify
+## Browserify
 
 随着 Node.js 的兴起，CommonJS 模块化规范成为了当时的主流规范。
 但是我们知道 CommonJS 所使用的 require 语法是同步的，当代码执行到 require 方法的时候，必须要等这个模块加载完后，才会执行后面的代码。
@@ -112,11 +112,11 @@ browserify 在运行时会通过进行 AST 语法树分析，确定各个模块�
 
 browserify 专注于 JS 打包，功能单一，一般配合 Gulp 一起使用。
 
-# ESM 规范出现
+## ESM 规范出现
 
 在 2015 年 JavaScript 官方的模块化终于出现了，但是官方只阐述如何实现该规范，浏览器少有支持.
 
-# Webpack
+## Webpack
 
 其实在 ESM 标准出现之前， webpack 已经诞生了，只是没有火起来。
 
@@ -126,7 +126,7 @@ webpack 的理念更偏向于工程化，伴随着 MVC 框架以及 ESM 的出�
 
 从来没有一个如此大而全的工具支持如此多的功能，几乎能够解决目前所有构建相关的问题。至此 webpack 真正成为了前端工程化的核心
 
-```
+```javascript
 //webpack 是基于配置
 
 module.exports = {
@@ -158,13 +158,13 @@ webpack 要兼顾各种方案的支持，也暴露出其缺点：
 1. 配置往往非常繁琐，开发人员心智负担大。
 2. webpack 为了支持 cjs 和 esm，自己做了 polyfill，导致产物代码很“丑”。
 
-## 为什么 webpack 构建产物看着很丑？
+### 为什么 webpack 构建产物看着很丑？
 
 我们在使用 webpack 构建项目后，会发现打包出来的代码非常的“丑”，这是为什么？原因就是：webpack 支持多种模块规范，但是最后都会变成 commonJS 规范（webpack5 对纯 esm 做了一定的优化），但是浏览器不支持 commonJS 规范，于是 webpack 自己实现了 require 和 module.exports，所以会有很多 polyfill 代码的注入。
 
 源代码：
 
-```
+```javascript
 // src/index.js
 let title = require('./title.js')
 console.log(title);
@@ -175,7 +175,7 @@ module.exports = 'bu';
 
 产物代码：
 
-```
+```javascript
 (() => {
     //把所有模块定义全部存放到modules对象里
     //属性名是模块的ID，也就是相对于根目录的相对路径，包括文件扩展名
@@ -212,7 +212,7 @@ module.exports = 'bu';
 
 ```
 
-# webpack 按需加载的模块怎么在浏览器中运行？
+### webpack 按需加载的模块怎么在浏览器中运行？
 
 在实际项目开发中，随着代码越写越多，构建后的 bundle 文件也会越来越大，我们往往按照种种策略对代码进行按需加载，将某部分代码在用户事件触发后再进行加载，那么 webpack 在运行时是怎么实现的呢？
 
@@ -220,7 +220,7 @@ module.exports = 'bu';
 
 源代码：
 
-```
+```javascript
 // index.js
 import("./hello").then((result) => {
     console.log(result.default);
@@ -233,7 +233,7 @@ export default 'hello';
 
 产物代码：
 
-```
+```javascript
 main.js
 
  // PS: 对代码做了部分简化及优化， 否则太难读了～～～
@@ -327,7 +327,7 @@ require.e('hello').then(require.bind(require, './src/hello.js')).then(result => 
 
 ```
 
-```
+```javascript
 //hello.main.js
 
 "use strict";
@@ -349,11 +349,11 @@ webpack 在产物代码中声明了一个全局变量 webpack 并赋值为一个
 
 在 webpack 出现两年后，rollup 诞生了～
 
-# Rollup
+## Rollup
 
 rollup 是一款面向未来的构建工具，完全基于 ESM 模块规范进行打包，率先提出了 Tree-Shaking 的概念。并且配置简单，易于上手，成为了目前最流行的 JS 库打包工具。
 
-```
+```javascript
 import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 
@@ -380,7 +380,7 @@ rollup 基于 esm，实现了强大的 Tree-Shaking 功能，使得构建产物�
 
 ```
 
-# Esbuild
+## Esbuild
 
 在实际开发过程中，随着项目规模逐渐庞大，前端工程的启动和打包的时间也不断上升，一些工程动辄几分钟甚至十几分钟，漫长的等待，真的让人绝望。这使得打包工具的性能被越来越多的人关注。
 
@@ -388,7 +388,7 @@ esbuild 是一个非常新的模块打包工具，它提供了类似 webpack 资
 
 esbuild 支持 ES6/CommonJS 规范、Tree Shaking、TypeScript、JSX 等功能特性。提供了 JS API/Go API/CLI 多种调用方式.
 
-```
+```javascript
 // JS API调用
 require('esbuild').build({
     entryPoints: ['app.jsx'],
@@ -398,13 +398,13 @@ require('esbuild').build({
 
 ```
 
-## 语言优势
+### 语言优势
 
 1. esBuild 是选择 Go 语言编写的，而在 esBuild 之前，前端构建工具都是基于 Node，使用 JS 进行编写。JavaScript 是一门解释性脚本语言，即使 V8 引擎做了大量优化（JWT 及时编译），本质上还是无法打破性能的瓶颈。而 Go 是一种编译型语言，在编译阶段就已经将源码转译为机器码，启动时只需要直接执行这些机器码即可。
 
 2. Go 天生具有多线程运行能力，而 JavaScript 本质上是一门单线程语言。esBuild 经过精心的设计，将代码 parse、代码生成等过程实现完全并行处理。
 
-## 性能至上原则
+### 性能至上原则
 
 1. esBuild 只提供现代 Web 应用最小的功能集合，所以其架构复杂度相对较小，更容易将性能做到极致
 
@@ -412,7 +412,7 @@ require('esbuild').build({
 
 3. 虽然 esBuild 性能非常高，但是其提供的功能很基础，不适合直接用到生产环境，更适合作为底层的模块构建工具，在它基础上进行二次封装。
 
-# Vite
+## Vite
 
 vite 是下一代前端开发与构建工具，提供 noBundle 的开发服务，并内置丰富的功能，无需复杂配置。
 
@@ -433,7 +433,7 @@ vite 在开发环境和生产环境分别做了不同的处理，在开发环境
 2. 对于项目中的第三方依赖，仅在初次启动和依赖变化时重构建，会执行一个依赖预构建的过程。由于是基于 esBuild 做的构建，所以非常快。
 3. 对于项目代码，则会依赖于浏览器的 ESM 的支持，直接按需访问，不必全量构建。
 
-## 为什么在生产环境中构建使用 rollup？
+### 为什么在生产环境中构建使用 rollup？
 
 1. 由于浏览器的兼容性问题以及实际网络中使用 ESM 可能会造成 RTT 时间过长，所以仍然需要打包构建。
 2. esbuild 虽然快，但是它还没有发布 1.0 稳定版本，另外 esbuild 对代码分割和 css 处理等支持较弱，所以生产环境仍然使用 rollup。
