@@ -269,4 +269,140 @@ console.log('Server running @ http://localhost:3080')
 
 ```
 
+# 预构建
+
+所谓依赖预构建指的是在 DevServer 启动之前，Vite 会扫描使用到的依赖从而进行构建，之后在代码中每次导入(import)时会动态地加载构建过的依赖这一过程
+
+也许大多数同学对于 Vite 的认知更多是 No Bundle，但上述的依赖预构建过程的确像是 Bundle 的过程。
+
+简单来说，Vite 在一开始将应用中的模块区分为 「依赖」 和 「源码」 两类：
+
+- 「依赖部分」 更多指的是代码中使用到的第三方模块，比如 vue、lodash、react 等。
+
+Vite 将会使用 `esbuild` 在应用启动时对于依赖部分进行预构建依赖。
+
+-「源码部分」 比如说平常我们书写的一个一个 js、jsx、vue 等文件，这部分代码会在运行时被编译，并不会进行任何打包。
+
+Vite 以 原生 ESM 方式提供源码。这实际上是让浏览器接管了打包程序的部分工作：Vite 只需要在浏览器请求源码时进行转换并按需提供源码。根据情景动态导入代码，即只在当前屏幕上实际使用时才会被处理。
+
+我们在文章中接下来要聊到的「依赖预构建」，其实更多是针对于第三方模块的预构建过程
+
+我们在使用 vite 启动项目时，细心的同学会发现项目 node_modules 目录下会额外增加一个 `node_modules/.vite/deps` 的目录：
+
+![alt text](./assert/image.png)
+
+
+这个目录就是 vite 在开发环境下预编译的产物。
+
+项目中的「依赖部分」：ahooks、antd、react 等部分会被预编译成为一个一个 .js 文件。
+
+同时，`.vite/deps` 目录下还会存在一个` _metadata.json`
+
+![alt text](./assert/image2.png)
+
+_metadata.json 中存在一些特殊属性：
+
+- hash
+- browserHash
+- optimized
+- chunks
+
+简单来说 vite 在预编译时会对于项目中使用到的第三方依赖进行依赖预构建，将构建后的产物存放在 `node_modules/.vite/deps` 目录中，比如 ahooks.js、react.js 等。
+
+同时，预编译阶段也会生成一个`_metadata.json` 的文件用来保存预编译阶段生成文件的映射关系(optimized 字段)，方便在开发环境运行时重写依赖路径。
+
+上边的概念大家也不需要过于在意，现在不清楚也没关系。我们只需要清楚，依赖预构建的过程简单来说就是生成 node_modules/deps 文件即可。
+
+
+## 为什么需要预构建
+
+那么为什么需要预构建呢？
+
+1. 首先第一点，我们都清楚 Vite 是基于浏览器 Esmodule 进行模块加载的方式。
+
+那么，对于一些非 ESM 模块规范的第三方库，比如 react。在开发阶段，我们需要借助预构建的过程将这部分非 esm 模块的依赖模块转化为 esm 模块。从而在浏览器中进行 import 这部分模块时也可以正确识别该模块语法。
+
+2. 另外一个方面，同样是由于 Vite 是基于 Esmodule 这一特性。在浏览器中每一次 import 都会发送一次请求，部分第三方依赖包中可能会存在许多个文件的拆分从而导致发起多次 import 请求。
+
+比如 lodash-es 中存在超过 600 个内置模块，当我们执行 import { debounce } from 'lodash' 时，如果不进行预构建浏览器会同时发出 600 多个 HTTP 请求，这无疑会让页面加载变得明显缓慢。
+
+正式通过依赖预构建，将 lodash-es 预构建成为单个模块后仅需要一个 HTTP 请求就可以解决上述的问题。
+
+基于上述两点，Vite 中正是为了「模块兼容性」以及「性能」这两方面大的原因，所以需要进行依赖预构建。
+
+
+## 思路导图
+
+那么，预构建究竟是怎么样的过程？我们先来看一幅关于依赖预构建的思维导图
+
+![alt text](./assert/image3.png)
+
+在开始后续的内容之前，我们先来简单和大家聊聊这张图中描述的各个关键步骤。
+
+1. 调用 npm run dev(vite) 启动开发服务器。首先，当我们在 vite 项目中首次启动开发服务器时，默认情况下（未指定 build.rollupOptions.input/optimizeDeps.entries 情况下），Vite 抓取项目目录下的所有的(config.root) .html 文件来检测需要预构建的依赖项（忽略了node_modules、build.outDir、__tests__ 和 coverage）。
+
+>❝
+>通常情况下，单个项目我们仅会使用单个 index.html 作为入口文件。
+>❞
+
+
+2. 分析 index.html 入口文件内容。其次，当首次运行启动命令后。Vite 会寻找到入口 HTML 文件后会分析该入口文件中的 <script> 标签寻找引入的 js/ts 资源（图中为 /src/main.ts）。
+
+3. 分析 /src/main.ts 模块依赖 之后，会进入 /src/main.ts 代码中进行扫描，扫描该模块中的所有 import 导入语句。这一步主要会将依赖分为两种类型从而进行不同的处理方式：
+
+ - 对于源码中引入的第三方依赖模块，比如 lodash、react 等第三方模块。Vite 会在这个阶段将导入的第三方依赖的入口文件地址记录到内存中，简单来说比如当碰到 import antd from 'antd'时 Vite 会记录 { antd: '/Users/19Qingfeng/Desktop/vite/vite-use/node_modules/antd/es/index.js' }，同时会将第三方依赖当作外部(external)进行处理（并不会递归进入第三方依赖进行扫描）。
+
+- 对于模块源代码，就比如我们在项目中编写的源代码。Vite 会依次扫描模块中所有的引入，对于非第三方依赖模块会再次递归进入扫描。
+
+4. 递归分析非第三方模块中的依赖引用 同时，在扫描完成 /src/main.ts 后，Vite 会对于该模块中的源码模块进行递归分析。这一步会重新进行第三步骤，唯一不同的是扫描的为 /src/App.tsx。
+
+最终，经过上述步骤 Vite 会从入口文件出发扫描出项目中所有依赖的第三方依赖，同时会存在一份类似于如下的映射关系表：
+
+```javascript
+ {
+        "antd": {
+            // key 为引入的第三方依赖名称，value 为该包的入口文件地址
+            "src": "/Users/19Qingfeng/Desktop/vite/vite-use/node_modules/antd/es/index.js"
+        }，
+        // ...
+    }
+```
+
+5. 生产依赖预构建产物
+
+经过上述的步骤，我们已经生成了一份源码中所有关于第三方导入的依赖映射表。最后，Vite 会根据这份映射表调用 EsBuild 对于扫描出的所有第三方依赖入口文件进行打包。将打包后的产物存放在 node_modules/.vite/deps 文件中。比如，源码中导入的 antd 最终会被构建为一个单独的 antd.js 文件存放在 node_modules/.vite/deps/antd.js 中。
+
+
+简单来说，上述的 5 个步骤就是 Vite 依赖预构建的过程。
+
+有些同学可能会好奇，预构建生成这样的文件怎么使用呢？
+
+这个问题其实和这篇文章关系并不是很大，本篇文章中着重点更多是和让大家了解预构建是在做什么以及是怎么实现的过程。
+
+简单来说，预构建对于第三方依赖生成 node_modules/.vite/deps 资源后。在开发环境下 vite 会“拦截”所有的 ESM 请求，将源码中对于第三方依赖的请求地址重写为我们预构建之后的资源产物，比如我们在源码中编写的 antd 导入
+
+![alt text](./assert/image4.png)
+
+最终在开发环境下 Vite 会将对于第三方模块的导入路径重新为:
+
+![alt text](./assert/image5.png)
+
+其实 import { Button } from '/node_modules/.vite/deps/antd.js?v=09d70271' 这个地址正是我们将 antd 在预构建阶段通过 Esbuild 在 /node_modules/.vite/deps 生成的产物。
+
+至于 Vite 在开发环境下是如何重写这部分第三方导入的地址这件事，我们会在下一篇关于实现 Vite 的文章会和大家详细讲解
+
+## 简单实现
+上边的过程我们对于 Vite 中的预构建进行了简单的流程梳理。
+
+经过上述的章节我们了解了预构建的概念，以及预构建究竟的大致步骤。
+
+接下来，我会用最简单的代码来和大家一起实现 Vite 中预构建这一过程。
+
+
+
+
+
+
+
+
 # 模块联邦 ？？？
