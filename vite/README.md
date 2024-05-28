@@ -1,4 +1,14 @@
 
+# Vite 特点
+
+- Dev Server 无需等待，即时启动；
+- 几乎实时的模块热更新；
+- 所需文件按需编译，避免编译用不到的文件；
+- 开箱即用，避免各种 Loader 和 Plugin 的配置；
+- TypeScript - 内置支持
+- less/sass/stylus/postcss - 内置支持（需要单独安装所对应的编译器）
+
+
 # 快速上手
 
 ```javascript
@@ -35,6 +45,7 @@ Vite 利用现代浏览器原生支持 ESM 特性，省略了对模块的打包�
 所以，这种「即时编译」的好处主要体现在：按需编译。
 
 # Optimize
+
 Vite 还提供了一个目前在帮助列表中并没有呈现的一个子命令：optimize。
 
 这个命令的作用就是单独的去「优化依赖」。
@@ -46,11 +57,13 @@ Vite 还提供了一个目前在帮助列表中并没有呈现的一个子命令
 这样后续请求这个文件时就不需要再即时去加载了。
 
 # HMR
+
 同样也是模式的问题，热更新的时候，Vite 只需要立即编译当前所修改的文件即可，所以响应速度非常快。
 
 而 Webpack 修改某个文件过后，会自动以这个文件为入口重写 build 一次，所有的涉及到的依赖也都会被加载一遍，所以反应速度会慢很多。
 
 # Build
+
 Vite 在生产模式下打包，需要使用 vite build 命令。
 
 这个命令内部采用的是 Rollup 完成的应用打包，最终还是会把文件都提前编译并打包到一起。
@@ -59,7 +72,15 @@ Vite 在生产模式下打包，需要使用 vite build 命令。
 
 不过好在 Dynamic imports 特性是可以有 Polyfill 的：https://github.com/GoogleChromeLabs/dynamic-import-polyfill ，也就是说，只要你想，它也可以运行在相对低版本的浏览器中。
 
+
+#  生产环境需要打包吗
+
+可以不打包，需要启动server，需要浏览器支持
+
+![alt text](./assert/imasge.png)
+
 # 打包 or 不打包
+
 Vite 的出现，引发了另外一个值得我们思考的问题：究竟还有没有必要打包应用？
 
 之前我们使用 Webpack 打包应用代码，使之成为一个 bundle.js，主要有两个原因：
@@ -87,11 +108,6 @@ Vite 的出现，引发了另外一个值得我们思考的问题：究竟还有
 而且不打包也有一个好处，就是可以把按需加载实现到极致。
 
 
-# 开箱即用
-
-- TypeScript - 内置支持
-- less/sass/stylus/postcss - 内置支持（需要单独安装所对应的编译器）
-
 # 特性小结
 Vite 带来的优势主要体现在提升开发者在开发过程中的体验。
 
@@ -101,7 +117,8 @@ Vite 带来的优势主要体现在提升开发者在开发过程中的体验。
 - 开箱即用，避免各种 Loader 和 Plugin 的配置；
 
 # 实现原理
-Vite 的核心功能：Static Server + Compile + HMR
+
+Vite 的核心功能：`Static Server` + `Compile` + `HMR`
 
 核心思路：
 
@@ -115,7 +132,7 @@ Vite 的核心功能：Static Server + Compile + HMR
 
 前文我们提到，在开发环境时，我们使用 vite 开发，是无需打包的，直接利用浏览器对 ESM 的支持，就可以访问我们写的组件代码，但是一些组件代码文件往往不是 JS 文件，而是 .ts、.tsx、.vue 等类型的文件。这些文件浏览器肯定直接是识别不了的，vite 在这个过程中做了些什么？
 
-```
+```javascript
 // index.html
 <!DOCTYPE html>
 <html lang="en">
@@ -155,7 +172,7 @@ createApp(App).mount('#app');
 
 返回内容（做了部分简化，移除了一些热更新的代码）：
 
-```
+```javascript
  const _sfc_main = {
     name: 'App'
 }
