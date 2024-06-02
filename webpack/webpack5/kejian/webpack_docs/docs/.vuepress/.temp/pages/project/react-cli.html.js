@@ -40,9 +40,9 @@ export const data = {
   "git": {
     "contributors": [
       {
-        "name": "FatMii",
-        "email": "ot.lzq@163.com",
-        "commits": 1
+        "name": "赖增钦",
+        "email": "zengqin.lai@hexasino.com",
+        "commits": 3
       }
     ]
   },
