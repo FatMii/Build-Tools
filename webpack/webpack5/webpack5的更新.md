@@ -4,12 +4,21 @@
 
 在 webpack 5 之前，没有内置资源模块，所以，我们通常使用，file-loader url-loader raw-loader之类的loader去处理。
 
-
 Asset Modules 它的值有四种:
- - asset/resource（对应file-loader）、
- - asset/inline（对应url-loader）、
+ - asset/resource（对应file-loader）,将文件转化成 Webpack 能识别的资源，其他不做处理
+ - asset/inline（对应url-loader）, 将文件转化成 Webpack 能识别的资源，同时小于某个大小的资源会处理成 data URI 形式
  - asset/source（对应raw-loader）、
  - asset。
+
+```javascript
+  {
+        test: /\.(ttf|woff2?)$/,
+        type: "asset/resource",
+        generator: {
+          filename: "static/media/[hash:8][ext][query]",
+        },
+      },
+```
 
 
 

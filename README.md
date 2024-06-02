@@ -160,7 +160,7 @@ webpack 要兼顾各种方案的支持，也暴露出其缺点：
 
 ### 为什么 webpack 构建产物看着很丑？
 
-我们在使用 webpack 构建项目后，会发现打包出来的代码非常的“丑”，这是为什么？原因就是：webpack 支持多种模块规范，但是最后都会变成 commonJS 规范（webpack5 对纯 esm 做了一定的优化），但是浏览器不支持 commonJS 规范，于是 webpack 自己实现了 require 和 module.exports，所以会有很多 polyfill 代码的注入。
+我们在使用 webpack 构建项目后，会发现打包出来的代码非常的“丑”，这是为什么？原因就是：webpack 支持多种模块规范，但是最后都会变成 commonJS 规范（webpack5 对纯 esm 做了一定的优化），但是浏览器不支持 `commonJS` 规范，于是 `webpack` 自己实现了 `require` 和 `module.exports`，所以会有很多 polyfill 代码的注入。
 
 源代码：
 
