@@ -28,7 +28,7 @@ export const data = {
   "git": {
     "contributors": [
       {
-        "name": "赖增钦",
+        "name": "Owllai",
         "email": "zengqin.lai@hexasino.com",
         "commits": 3
       }
