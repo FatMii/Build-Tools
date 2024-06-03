@@ -53,7 +53,7 @@ memory表示会将打包生成的资源存放于内存中。filesystem表示开�
 ```
 
 
-# 4.更好的hash算法,
+# 4.更好的hash算法
   
   这里指的就是访问web页面时的浏览器缓存，我们也知道，之前有 hash chunckhash contenthash 在 webpack 5中，把hash改成了fullhash。
 
