@@ -11,12 +11,11 @@
 
 # 快速上手
 
-```javascript
+```bash
 $ npm init vite-app <project-name>
 $ cd <project-name>
 $ npm install
 $ npm run dev
-
 ```
 
 > npm init 或者 yarn create 是这两个包管理工具提供的新功能， 其内部就是自动去安装一个 create-<xxx> 的模块（临时），然后自动执行这个模块中的 bin。 例如: yarn create react-app my-react-app 就相当于先 yarn global add create-react-app，然后自动执行 create-react-app my-react-app
