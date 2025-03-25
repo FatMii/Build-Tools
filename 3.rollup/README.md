@@ -23,7 +23,7 @@ Rollup 打包结果惊人的简洁，基本上就跟我们手写的代码一样�
 
 而且我们仔细观察打包结果，你会发现，在我们输出的结果中只会保留那些用到的部分，对于未引用部分都没有输出。这是因为 Rollup 默认会自动开启 Tree-shaking 优化输出结果，Tree-shaking 的概念最早也就是 Rollup 这个工具提出的
 
-## 使用插件
+# 使用插件
 
 Rollup 自身的功能就只是 ES Modules 模块的合并，如果有更高级的要求，例如加载其他类型的资源文件或者支持导入 CommonJS 模块，又或是编译 ES 新特性，这些额外的需求 Rollup 同样支持使用插件去扩展实现。
 
@@ -76,7 +76,7 @@ console.log(name, version)
 
 以上就是 Rollup 中插件的使用。
 
-## 加载 NPM 模块
+# 加载 NPM 模块
 
 Rollup 默认只能够按照文件路径的方式加载本地的模块文件，对于 node_modules 目录中的第三方模块，并不能像 Webpack 一样，直接通过模块名称直接导入。
 
@@ -123,7 +123,7 @@ P.S. 相比于普通的 lodash，lodash-es 可以更好地支持 Tree-shaking。
 
 这里使用 Lodash 的 ESM 版本而不是 Lodash 普通版本的原因是 Rollup 默认只能处理 ESM 模块。如果要使用普通版本则需要额外处理。
 
-## 加载 CommonJS 模块
+# 加载 CommonJS 模块
 
 由于 Rollup 设计的是只处理 ES Modules 模块的打包，所以如果在代码中导入 CommonJS 模块，默认是不被支持的。但是目前大量的 NPM 模块还是使用 CommonJS 方式导出成员，所以为了兼容这些模块。官方给出了一个插件，叫作 @rollup/plugin-commonjs (opens new window)。
 
@@ -151,7 +151,7 @@ console.log(cjs) // cjs => { foo: 'bar' }
 入口文件导入的结果就是 cjs-module.js 中导出的对象了。
 
 
-## Code Splitting
+# Code Splitting
 
 Rollup 的最新版本中已经开始支持代码拆分了。我们同样可以使用符合 ES Modules 标准的动态导入方式实现模块的按需加载。例如：
 
@@ -197,7 +197,7 @@ export default {
 
 
 
-### 输出格式问题
+## 输出格式问题
 
 目前采用的输出格式是 es，所以自动分包过后，得到的代码还是使用 ES Modules 实现的动态模块加载，具体输出结果如下：
 
@@ -244,7 +244,7 @@ export default {
 > P.S. 本文中所有的案例源代码：https://github.com/zce/rollup-demo
 
 
-## 写在最后
+# 写在最后
 通过以上的探索，我们发现 Rollup 确实有它的优势：
 
 - 输出结果更加扁平，执行效率更高；
