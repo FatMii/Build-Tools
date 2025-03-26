@@ -66,19 +66,19 @@ console.log(name, version)
 
 ```
 
-那这个 JSON 文件中的每一个属性都会作为单独的导出成员。我们可以提取一下 JSON 中的 name 和 version，然后把它打印出来。
+那这个 JSON 文件中的每一个属性都会作为单独的导出成员。我们可以提取一下 JSON 中的 `name` 和 `version`，然后把它打印出来。
 
-完成以后，我们打开命令行终端，再次运行 Rollup 打包。打包完成以后，我们找到输出的 bundle.js，具体结果如下：
+完成以后，我们打开命令行终端，再次运行 Rollup 打包。打包完成以后，我们找到输出的`bundle.js`，具体结果如下：
 
 ![alt text](./img/1712341384689.jpg)
 
-此时你就能看到，package.json 中的 name 和 version 正常被打包进来了，而且其他没用到的属性也都被 Tree-shaking 移除掉了。
+此时你就能看到，`package.json` 中的 `name` 和 `version` 正常被打包进来了，而且其他没用到的属性也都被 `Tree-shaking` 移除掉了。
 
 以上就是 Rollup 中插件的使用。
 
 # 加载 NPM 模块
 
-Rollup 默认只能够按照文件路径的方式加载本地的模块文件，对于 node_modules 目录中的第三方模块，并不能像 Webpack 一样，直接通过模块名称直接导入。
+Rollup 默认只能够按照文件路径的方式加载本地的模块文件，对于` node_modules `目录中的第三方模块，并不能像 Webpack 一样，直接通过模块名称直接导入。
 
 为了抹平这个差异，Rollup 给出了一个 `@rollup/plugin-node-resolve (opens new window)`插件，通过使用这个插件，我们就可以在代码中直接使用模块名称导入模块了。
 
@@ -88,7 +88,7 @@ Rollup 默认只能够按照文件路径的方式加载本地的模块文件，�
 $ npm i @rollup/plugin-node-resolve --save-dev
 ```
 
-安装完成过后，打开配置文件，这里同样导入插件函数，然后把它配置到 plugins 数组中。具体配置如下：
+安装完成过后，打开配置文件，这里同样导入插件函数，然后把它配置到 `plugins` 数组中。具体配置如下：
 
 ```javascript
 // ./rollup.config.js
@@ -106,7 +106,7 @@ export default {
 
 ```
 
-完成以后我们就可以回到代码中直接导入 node_modules 中的第三方模块了。例如：
+完成以后我们就可以回到代码中直接导入 `node_modules` 中的第三方模块了。例如：
 
 ```javascript
 // ./src/index.js
@@ -115,19 +115,19 @@ console.log(camelCase('hello rollup'))
 
 ```
 
-这里我导入的是我提前安装好的一个 lodash-es (opens new window)模块，这个模块就是常用的 Lodash 模块的 ESM 版本。导入过后我们就可以使用这个模块所提供的工具方法了。
+这里我导入的是我提前安装好的一个 `lodash-es (opens new window)`模块，这个模块就是常用的 `Lodash` 模块的 ESM 版本。导入过后我们就可以使用这个模块所提供的工具方法了。
 
-P.S. 相比于普通的 lodash，lodash-es 可以更好地支持 Tree-shaking。
+> P.S. 相比于普通的 lodash，lodash-es 可以更好地支持 `Tree-shaking`。
 
-完成过后我们再次打开命令行终端，运行 Rollup 打包，此时 lodash 就能够打包到我们的 bundle.js 中了。
+完成过后我们再次打开命令行终端，运行 Rollup 打包，此时 lodash 就能够打包到我们的 `bundle.js` 中了。
 
-这里使用 Lodash 的 ESM 版本而不是 Lodash 普通版本的原因是 Rollup 默认只能处理 ESM 模块。如果要使用普通版本则需要额外处理。
+这里使用 `Lodash` 的` ESM` 版本而不是` Lodash `普通版本的原因是` Rollup` 默认只能处理 `ESM `模块。如果要使用普通版本则需要额外处理。
 
 # 加载 CommonJS 模块
 
-由于 Rollup 设计的是只处理 ES Modules 模块的打包，所以如果在代码中导入 CommonJS 模块，默认是不被支持的。但是目前大量的 NPM 模块还是使用 CommonJS 方式导出成员，所以为了兼容这些模块。官方给出了一个插件，叫作 @rollup/plugin-commonjs (opens new window)。
+由于 `Rollup `设计的是只处理 `ES Modules` 模块的打包，所以如果在代码中导入` CommonJS` 模块，默认是不被支持的。但是目前大量的 NPM 模块还是使用 CommonJS 方式导出成员，所以为了兼容这些模块。官方给出了一个插件，叫作 `@rollup/plugin-commonjs (opens new window)`。
 
-这个插件在用法上跟前面两个插件是一样的，我就不单独演示了。我们直接看一下这个插件的效果。这里我添加了一个 cjs-module.js 文件，具体代码如下：
+这个插件在用法上跟前面两个插件是一样的，我就不单独演示了。我们直接看一下这个插件的效果。这里我添加了一个 `cjs-module.js` 文件，具体代码如下：
 
 ```javascript
 // ./src/cjs-module.js
@@ -137,7 +137,7 @@ module.exports = {
 
 ```
   
-这个文件中使用 CommonJS 的方式导出了一个对象。然后回到入口文件中通过 ES Modules 的方式导入，具体代码如下：
+这个文件中使用 `CommonJS` 的方式导出了一个对象。然后回到入口文件中通过 `ES Modules` 的方式导入，具体代码如下：
 
 ```javascript
 // ./src/index.js
@@ -148,12 +148,12 @@ import cjs from './cjs-module'
 console.log(cjs) // cjs => { foo: 'bar' }
 
 ```
-入口文件导入的结果就是 cjs-module.js 中导出的对象了。
+入口文件导入的结果就是 `cjs-module.js` 中导出的对象了。
 
 
 # Code Splitting
 
-Rollup 的最新版本中已经开始支持代码拆分了。我们同样可以使用符合 ES Modules 标准的动态导入方式实现模块的按需加载。例如：
+Rollup 的最新版本中已经开始支持代码拆分了。我们同样可以使用符合 `ES Modules `标准的动态导入方式实现模块的按需加载。例如：
 
 ```javascript
 // ./src/index.js
@@ -186,7 +186,7 @@ export default {
 
 ```
 
-这里我们将 output 配置中的 file 选项删掉，取而代之的是添加一个 dir 选项，把它设置为 'dist'，也就是输出到 dist 目录中。
+这里我们将 `output` 配置中的`file `选项删掉，取而代之的是添加一个 `dir` 选项，把它设置为 `'dist'`，也就是输出到 dist 目录中。
 
 这样的话，再次打包就可以正常输出了。具体输出结果如下：
 
@@ -199,15 +199,15 @@ export default {
 
 ## 输出格式问题
 
-目前采用的输出格式是 es，所以自动分包过后，得到的代码还是使用 ES Modules 实现的动态模块加载，具体输出结果如下：
+目前采用的输出格式是 es，所以自动分包过后，得到的代码还是使用 `ES Modules` 实现的动态模块加载，具体输出结果如下：
 
 ![alt text](./img/1712341657995.jpg)
 
 很明显，这种方式的代码仍然会存在环境兼容性问题：如果在低版本浏览器，这种输出结果是无法正常执行的。
 
-解决这个问题的办法就是修改 Rollup 打包输出的格式。目前所有支持动态导入的输出格式中，只有 amd 和 system 两种格式打包的结果适合于浏览器环境。
+解决这个问题的办法就是修改` Rollup` 打包输出的格式。目前所有支持动态导入的输出格式中，只有 `amd` 和 `system `两种格式打包的结果适合于浏览器环境。
 
-所以在这种情况下，我们可以选择以 amd 或者 system 格式输出。这里我们以 amd 为例，这里我们先将 Rollup 配置中的 format 设置为 'amd'。具体配置如下：
+所以在这种情况下，我们可以选择以 `amd` 或者 `system`格式输出。这里我们以` amd `为例，这里我们先将 `Rollup` 配置中的 `format` 设置为 'amd'。具体配置如下：
 
 ```javascript
 // ./rollup.config.js
@@ -225,7 +225,7 @@ export default {
 
 ![alt text](./img/1712341717424.jpg)
 
-需要注意一点，这种 AMD 标准在浏览器中也不是直接支持的，也就是说我们还是需要使用一个支持这个标准的库来加载这些输出的模块，例如 Require.js (opens new window)，具体使用方式参考：
+需要注意一点，这种 AMD 标准在浏览器中也不是直接支持的，也就是说我们还是需要使用一个支持这个标准的库来加载这些输出的模块，例如 `Require.js` (opens new window)，具体使用方式参考：
 
 ```javascript
 <!DOCTYPE html>
@@ -254,7 +254,7 @@ export default {
 但是它的缺点也同样明显：
 
 - 加载非 ESM 的第三方模块比较复杂；
-- 因为模块最终都被打包到全局中，所以无法实现 HMR；
+- **因为模块最终都被打包到全局中，所以无法实现 `HMR`**；
 - 浏览器环境中，代码拆分功能必须使用 `Require.js` 这样的 AMD 库。
 
 综合以上特点，我们发现如果我们开发的是一个应用程序，需要大量引用第三方模块，同时还需要 `HMR` 提升开发体验，而且应用过大就必须要分包。那这些需求 Rollup 都无法满足。
@@ -263,7 +263,7 @@ export default {
 
 但是到目前为止，开源社区中大多数人还是希望这两个工具共同存在，并且能够相互支持和借鉴，原因很简单：让更专业的工具完成更专业的事情。
 
-总结一下：Webpack 大而全，Rollup 小而美。
+总结一下：**Webpack 大而全，Rollup 小而美**。
 
 在对它们的选择上，我的基本原则是：应用开发使用 Webpack，类库或者框架开发使用 Rollup。
 
